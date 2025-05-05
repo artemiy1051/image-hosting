@@ -1,5 +1,10 @@
 # Сервис хранения и сжатия изображений
 
+## Требования
+
+- PHP 8.2 с библиотекой Imagick
+- Ghostscript
+
 ## Цель
 
 Разработать сервис по загрузке и получению файлов с возможностью управления какого размера (в пикселях) нужно его получить. Отдавать сервис должен как изображения, так и pdf-файлы, у которых формируется миниатюра - первый страница. Для модерирования должен быть учтен web-интерфейс для модерирования загруженных данных и для их оперативного удаления.
@@ -43,3 +48,84 @@
 3. Хранение:
     1. Хранения файлов по идентификаторам или прочим параметрам для быстрой индексации хранящихся файлов
     2. База данных будет состоять из одной таблицы с данными файла и его идентификатором.
+
+## Примеры запросов
+
+Пример 1: Загрузка изображения (PNG) и конвертация в JPG
+
+```bash
+curl -X POST "{{base_url}}/api/upload" \
+  -F "file=@/path/to/your/image.png" \
+  -F "width=800" \
+  -F "height=600" \
+  -F "size=85" \
+  -F "extension=jpg"
+```
+
+```json
+{
+    "original_file_id": "40f57647-54a9-4c53-9d69-bf09b26df4ab",
+    "converted_output": {
+        "id": "feea3467-0e9e-4031-b9e0-0abc4ce6cdfa",
+        "name": "feea3467-0e9e-4031-b9e0-0abc4ce6cdfa.jpg",
+        "path": "/storage/uploads/converted/feea3467-0e9e-4031-b9e0-0abc4ce6cdfa.jpg",
+        "extension": "jpg"
+    }
+}
+```
+
+Пример 2: Загрузка изображения (JPG) и конвертация в WebP
+
+```bash
+curl -X POST "{{base_url}}/api/upload" \
+  -F "file=@/path/to/your/image.jpg" \
+  -F "width=400" \
+  -F "height=300" \
+  -F "size=75" \
+  -F "extension=webp"
+```
+
+Ответ:
+```json
+{
+    "original_file_id": "851234c8-46bf-4fd0-8fbb-54aef804c77d",
+    "converted_output": {
+        "id": "2ee1320e-98ab-45f3-9c96-7ab38d218683",
+        "name": "2ee1320e-98ab-45f3-9c96-7ab38d218683.webp",
+        "path": "/storage/uploads/converted/2ee1320e-98ab-45f3-9c96-7ab38d218683.webp",
+        "extension": "webp"
+    }
+}
+```
+
+Пример 3: Загрузка PDF (генерируется миниатюра JPG)
+
+```bash
+curl -X POST "{{base_url}}/api/upload" \
+  -F "file=@/path/to/your/document.pdf" \
+  -F "width=1000" \
+  -F "height=1000" \
+  -F "size=1" \
+  -F "extension=jpg"
+```
+
+Ответ:
+```json
+{
+    "original_file_id": "d97d33ce-3e33-4bca-adfd-895a542e7283",
+    "converted_output": {
+        "minified_pdf": {
+            "id": "3a081c1b-a2ac-4d8c-a265-c0a97602ae57",
+            "name": "3a081c1b-a2ac-4d8c-a265-c0a97602ae57.pdf",
+            "path": "/storage/uploads/converted/3a081c1b-a2ac-4d8c-a265-c0a97602ae57.pdf",
+            "extension": "pdf"
+        },
+        "preview_image": {
+            "id": "f0ca7b1a-f500-4f09-b36b-e07da8a3a16d",
+            "name": "f0ca7b1a-f500-4f09-b36b-e07da8a3a16d.jpg",
+            "path": "/storage/uploads/converted/f0ca7b1a-f500-4f09-b36b-e07da8a3a16d.jpg",
+            "extension": "jpg"
+        }
+    }
+}
+```
