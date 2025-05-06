@@ -35,6 +35,12 @@ sudo find / -name "policy.xml" 2>/dev/null | grep ImageMagick
 
 Надо скопировать файл `.env.example` в `.env`. Нужно настроить подключение базы данных там и указать url.
 
+Нужно сгенерировать ключ:
+
+```bash
+php artisan key:generate
+```
+
 Нужно сделать миграцию
 
 ```bash
